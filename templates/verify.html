@@ -1,0 +1,173 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<!-- UPLOAD -->
+<div class="row justify-content-center">
+
+<div class="col-md-6">
+
+<div class="card shadow-lg p-4">
+
+<h3 class="text-center mb-4">🤖 AI Signature Verification</h3>
+
+<form id="verifyForm" action="/verify" method="POST" enctype="multipart/form-data">
+
+<input type="file"
+name="signature"
+class="form-control mb-3"
+required
+onchange="previewImage(event)">
+
+<button type="submit" class="btn btn-primary w-100">
+Verify Signature
+</button>
+
+</form>
+
+<!-- IMAGE PREVIEW -->
+<div id="previewBox" class="text-center mt-3" style="display:none;">
+<h5>Selected Image</h5>
+<img id="previewImg" class="img-fluid rounded" width="200">
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- SCANNING -->
+<div id="scanner" class="text-center mt-4" style="display:none;">
+
+<h4>🔍 AI Scanning in Progress...</h4>
+
+<div class="scan-box mt-3">
+<div class="scan-line"></div>
+</div>
+
+<p class="mt-3">Analyzing signature pattern...</p>
+
+</div>
+
+{% if result %}
+
+<hr>
+
+<div class="row mt-4">
+
+<!-- IMAGE -->
+<div class="col-md-5">
+<div class="card p-3 shadow">
+<h5 class="text-center">Uploaded Signature</h5>
+<img src="{{ url_for('static', filename='uploads/' + image) }}"
+class="img-fluid rounded">
+</div>
+</div>
+
+<!-- RESULT -->
+<div class="col-md-7">
+
+<div class="card p-4 shadow">
+
+<h4>Verification Result</h4>
+
+<div class="row">
+
+<div class="col-md-4">
+<div class="card bg-primary text-white text-center p-3">
+<h6>CNN</h6>
+<h4>{{cnn}}</h4>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card bg-info text-white text-center p-3">
+<h6>ORB</h6>
+<h4>{{orb}}</h4>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card bg-dark text-white text-center p-3">
+<h6>Final</h6>
+<h4>{{final}}</h4>
+</div>
+</div>
+
+</div>
+
+<hr>
+
+{% if result == "Genuine" %}
+<div class="alert alert-success text-center mt-3">
+✔ Genuine Signature
+</div>
+{% else %}
+<div class="alert alert-danger text-center mt-3">
+✖ Forged Signature
+</div>
+{% endif %}
+
+<div class="text-center mt-3">
+<a href="/download_report/{{id}}" class="btn btn-success">
+📄 Download Report
+</a>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endif %}
+
+</div>
+
+<!-- STYLE -->
+<style>
+
+.scan-box{
+width:300px;
+height:150px;
+border:2px solid #3b82f6;
+margin:auto;
+position:relative;
+overflow:hidden;
+border-radius:10px;
+}
+
+.scan-line{
+width:100%;
+height:4px;
+background:red;
+position:absolute;
+animation:scan 2s infinite;
+}
+
+@keyframes scan{
+0%{top:0;}
+100%{top:100%;}
+}
+
+</style>
+
+<!-- SCRIPT -->
+<script>
+
+function previewImage(event){
+const img = document.getElementById("previewImg");
+img.src = URL.createObjectURL(event.target.files[0]);
+document.getElementById("previewBox").style.display="block";
+}
+
+document.getElementById("verifyForm").addEventListener("submit", function(){
+document.getElementById("scanner").style.display="block";
+});
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="text-center">
+    <h2>Dashboard</h2>
+    <p>Welcome to Signature Verification System</p>
+
+    <a href="/verify_page" class="btn btn-primary btn-lg mt-3">
+        Verify Signature
+    </a>
+</div>
+
+<hr>
+
+<div class="row mt-4">
+
+<div class="col-md-4">
+<div class="card text-center p-3">
+<h5>Total Verifications</h5>
+<h3>{{total}}</h3>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card text-center p-3">
+<h5>Genuine Signatures</h5>
+<h3>{{genuine}}</h3>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card text-center p-3">
+<h5>Forged Signatures</h5>
+<h3>{{forged}}</h3>
+</div>
+</div>
+
+</div>
+
+<hr>
+
+<h4 class="mt-4">Verification Accuracy</h4>
+
+<canvas id="accuracyChart"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+var ctx=document.getElementById('accuracyChart');
+
+new Chart(ctx,{
+type:'bar',
+
+data:{
+labels:['CNN','ORB'],
+
+datasets:[{
+label:'Accuracy',
+
+data:[92,88],
+
+backgroundColor:[
+'blue',
+'green'
+]
+
+}]
+}
+
+})
+
+</script>
+
+{% endblock %}

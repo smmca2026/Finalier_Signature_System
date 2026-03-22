@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+<div class="col-md-6">
+
+<div class="card shadow p-4 text-center">
+
+<h3 class="mb-4">Verification Result</h3>
+
+<p><b>CNN Score:</b> {{cnn}}</p>
+<p><b>ORB Score:</b> {{orb}}</p>
+<p><b>Final Score:</b> {{final}}</p>
+
+{% if result == "Genuine" %}
+
+<div class="alert alert-success">
+✔ Genuine Signature
+</div>
+
+{% else %}
+
+<div class="alert alert-danger">
+✖ Forged Signature
+</div>
+
+{% endif %}
+
+<a href="/download_report" class="btn btn-success mt-3">
+Download Report
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

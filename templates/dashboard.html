@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h3 class="mb-4">Dashboard</h3>
+
+<div class="row">
+
+<div class="col-md-4">
+<div class="card card-custom p-4 text-center bg-primary text-white">
+<h5>Total</h5>
+<h2>{{total}}</h2>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card card-custom p-4 text-center bg-success text-white">
+<h5>Genuine</h5>
+<h2>{{genuine}}</h2>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card card-custom p-4 text-center bg-danger text-white">
+<h5>Forged</h5>
+<h2>{{forged}}</h2>
+</div>
+</div>
+
+</div>
+
+<br>
+
+<div class="row">
+
+<div class="col-md-4">
+<div class="card card-custom p-3 text-center">
+<h5>Verify Signature</h5>
+<a href="/verify" class="btn btn-primary">Open</a>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card card-custom p-3 text-center">
+<h5>Reports</h5>
+<a href="/reports" class="btn btn-success">Open</a>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card card-custom p-3 text-center">
+<h5>Settings</h5>
+<a href="/settings" class="btn btn-dark">Open</a>
+</div>
+</div>
+
+</div>
+
+{% endblock %}

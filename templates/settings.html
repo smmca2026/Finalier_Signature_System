@@ -1,0 +1,158 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<h2 class="mb-4">⚙ Advanced Settings</h2>
+
+<div class="row">
+
+<!-- PROFILE CARD -->
+<div class="col-md-4">
+
+<div class="card glass text-center p-4">
+
+<img id="preview"
+src="{% if session.get('photo') %}{{ url_for('static', filename='uploads/' + session['photo']) }}{% else %}https://cdn-icons-png.flaticon.com/512/3135/3135715.png{% endif %}"
+class="profile-img mb-3">
+
+<h5>{{session["user"]}}</h5>
+
+</div>
+
+</div>
+
+<!-- SETTINGS -->
+<div class="col-md-8">
+
+<div class="card glass p-4">
+
+<!-- PROFILE -->
+<h4>Edit Profile</h4>
+
+<form method="POST" action="/update_profile">
+
+<input name="username" class="form-control mb-2"
+value="{{session['user']}}" required>
+
+<input name="email" class="form-control mb-2"
+placeholder="Email" required>
+
+<button class="btn btn-primary w-100">Update Profile</button>
+
+</form>
+
+<hr>
+
+<!-- PHOTO -->
+<h4>Upload Photo</h4>
+
+<form action="/upload_photo" method="POST" enctype="multipart/form-data">
+
+<input type="file" name="photo" class="form-control mb-2"
+onchange="previewImage(event)" required>
+
+<button class="btn btn-success w-100">Upload</button>
+
+</form>
+
+<hr>
+
+<!-- PASSWORD -->
+<h4>Change Password</h4>
+
+<form method="POST" action="/change_password">
+
+<input type="password" name="old_password"
+class="form-control mb-2"
+placeholder="Current Password" required>
+
+<input type="password" id="newPass"
+name="new_password"
+class="form-control mb-2"
+placeholder="New Password"
+onkeyup="checkStrength()" required>
+
+<!-- STRENGTH BAR -->
+<div class="progress mb-2">
+<div id="strengthBar" class="progress-bar"></div>
+</div>
+
+<button class="btn btn-warning w-100">Update Password</button>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- STYLE -->
+<style>
+
+/* GLASS EFFECT */
+.glass{
+background: rgba(255,255,255,0.1);
+backdrop-filter: blur(10px);
+border-radius:15px;
+box-shadow:0 8px 32px rgba(0,0,0,0.2);
+}
+
+/* PROFILE IMAGE */
+.profile-img{
+width:120px;
+height:120px;
+border-radius:50%;
+object-fit:cover;
+transition:0.3s;
+}
+
+.profile-img:hover{
+transform:scale(1.1);
+}
+
+/* DARK MODE SUPPORT */
+.dark .glass{
+background: rgba(30,41,59,0.6);
+color:white;
+}
+
+</style>
+
+<!-- SCRIPT -->
+<script>
+
+/* IMAGE PREVIEW */
+function previewImage(event){
+const img = document.getElementById("preview");
+img.src = URL.createObjectURL(event.target.files[0]);
+}
+
+/* PASSWORD STRENGTH */
+function checkStrength(){
+
+let pass = document.getElementById("newPass").value;
+let bar = document.getElementById("strengthBar");
+
+if(pass.length < 5){
+bar.style.width="30%";
+bar.className="progress-bar bg-danger";
+}
+else if(pass.length < 8){
+bar.style.width="60%";
+bar.className="progress-bar bg-warning";
+}
+else{
+bar.style.width="100%";
+bar.className="progress-bar bg-success";
+}
+
+}
+
+</script>
+
+{% endblock %}

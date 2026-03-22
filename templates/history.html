@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2 class="mb-4">Verification History</h2>
+
+<div class="card shadow p-4">
+
+<table class="table table-bordered">
+
+<thead class="table-dark">
+
+<tr>
+<th>ID</th>
+<th>Filename</th>
+<th>CNN</th>
+<th>ORB</th>
+<th>Final</th>
+<th>Result</th>
+<th>Download</th>
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for row in history %}
+
+<tr>
+
+<td>{{ row[0] }}</td>
+<td>{{ row[1] }}</td>
+<td>{{ row[2] }}</td>
+<td>{{ row[3] }}</td>
+<td>{{ row[4] }}</td>
+
+<td>
+
+{% if row[5] == "Genuine" %}
+
+<span class="text-success fw-bold">{{ row[5] }}</span>
+
+{% else %}
+
+<span class="text-danger fw-bold">{{ row[5] }}</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+<a href="/download_report" class="btn btn-success btn-sm">
+
+<i class="fa fa-download"></i> Download
+
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% endblock %}

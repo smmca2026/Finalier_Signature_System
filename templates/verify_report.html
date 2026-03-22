@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Signature Report</title>
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            background: #f4f6f9;
+        }
+        .box {
+            background: white;
+            padding: 30px;
+            margin: 50px auto;
+            width: 350px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+        .genuine { color: green; font-size: 24px; }
+        .forged { color: red; font-size: 24px; }
+        table {
+            margin: auto;
+            border-collapse: collapse;
+        }
+        td, th {
+            border: 1px solid black;
+            padding: 8px 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>🔍 Signature Verification</h2>
+
+    <h3 class="{{ 'genuine' if result=='Genuine' else 'forged' }}">
+        {{ result }}
+    </h3>
+
+    <table>
+        <tr><th>CNN</th><td>{{ cnn }}</td></tr>
+        <tr><th>ORB</th><td>{{ orb }}</td></tr>
+        <tr><th>Accuracy</th><td>{{ accuracy }}%</td></tr>
+        <tr><th>Date</th><td>{{ date }}</td></tr>
+    </table>
+
+</div>
+
+</body>
+</html>

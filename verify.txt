@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card shadow p-4">
+<h3>Upload Signature</h3>
+
+<form method="POST" action="/verify" enctype="multipart/form-data">
+    <div class="mb-3">
+        <input type="file" name="signature" class="form-control" required>
+    </div>
+    <button class="btn btn-success">Verify</button>
+</form>
+
+</div>
+
+{% endblock %}
