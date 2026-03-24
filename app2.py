@@ -61,17 +61,14 @@ def create_graph(cnn, orb):
     values = [cnn,orb]
 
     plt.figure(figsize=(6,4))
-
     plt.plot(labels, values, marker="o", linewidth=3)
 
     plt.title("CNN vs ORB Score")
     plt.ylabel("Score")
     plt.ylim(0,1)
-
     plt.grid(True)
 
     graph_path = "static/graph.png"
-
     plt.savefig(graph_path)
     plt.close()
 
@@ -143,10 +140,27 @@ def dashboard():
     if "user" not in session:
         return redirect("/")
 
-    return render_template("dashboard.html")
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+
+    c.execute("SELECT COUNT(*) FROM history")
+    total = c.fetchone()[0]
+
+    c.execute("SELECT COUNT(*) FROM history WHERE result='Genuine'")
+    genuine = c.fetchone()[0]
+
+    c.execute("SELECT COUNT(*) FROM history WHERE result='Forged'")
+    forged = c.fetchone()[0]
+
+    conn.close()
+
+    return render_template("dashboard.html",
+                           total=total,
+                           genuine=genuine,
+                           forged=forged)
 
 
-# ---------------- VERIFY SIGNATURE ----------------
+# ---------------- VERIFY ----------------
 
 @app.route("/verify", methods=["GET","POST"])
 def verify():
@@ -187,10 +201,13 @@ def verify():
     return render_template("verify.html")
 
 
-# ---------------- REPORT HISTORY ----------------
+# ---------------- REPORTS ----------------
 
 @app.route("/reports")
 def reports():
+
+    if "user" not in session:
+        return redirect("/")
 
     conn = sqlite3.connect("database.db")
     c = conn.cursor()
@@ -216,6 +233,9 @@ def download_report(id):
 
     conn.close()
 
+    if data is None:
+        return "Report not found"
+
     cnn,orb,final,result = data
 
     graph_path = create_graph(cnn,orb)
@@ -223,29 +243,16 @@ def download_report(id):
     file_path = f"report_{id}.pdf"
 
     styles = getSampleStyleSheet()
-
     elements = []
 
-    # LOGO
-    if os.path.exists("static/logo.png"):
-        logo = Image("static/logo.png", width=120, height=60)
-        logo.hAlign = "CENTER"
-        elements.append(logo)
-
     elements.append(Spacer(1,20))
-
-    # TITLE
-    title = Paragraph("<b>Signature Verification Report</b>", styles['Title'])
-    elements.append(title)
-
+    elements.append(Paragraph("<b>Signature Verification Report</b>", styles['Title']))
     elements.append(Spacer(1,10))
 
-    date = Paragraph("Date: "+datetime.now().strftime("%d-%m-%Y %H:%M"),styles['Normal'])
-    elements.append(date)
-
+    elements.append(Paragraph("Date: "+datetime.now().strftime("%d-%m-%Y %H:%M"),
+                              styles['Normal']))
     elements.append(Spacer(1,20))
 
-    # TABLE
     table_data = [
         ["Metric","Score"],
         ["CNN Score",cnn],
@@ -263,20 +270,12 @@ def download_report(id):
         ("ALIGN",(0,0),(-1,-1),"CENTER")
     ]))
 
-    table.hAlign = "CENTER"
-
     elements.append(table)
-
     elements.append(Spacer(1,30))
 
-    # GRAPH
-    graph = Image(graph_path,width=400,height=250)
-    graph.hAlign = "CENTER"
-
-    elements.append(graph)
+    elements.append(Image(graph_path,width=400,height=250))
 
     pdf = SimpleDocTemplate(file_path)
-
     pdf.build(elements)
 
     return send_file(file_path, as_attachment=True)
@@ -289,62 +288,11 @@ def settings():
     return render_template("settings.html")
 
 
-# ---------------- PROFILE PHOTO ----------------
-
-@app.route("/upload_photo", methods=["POST"])
-def upload_photo():
-
-    photo = request.files["photo"]
-
-    path = os.path.join(UPLOAD_FOLDER, photo.filename)
-    photo.save(path)
-
-    session["photo"] = photo.filename
-
-    flash("Profile photo uploaded successfully")
-
-    return redirect("/settings")
-
-
-# ---------------- CHANGE PASSWORD ----------------
-
-@app.route("/change_password", methods=["POST"])
-def change_password():
-
-    old = request.form["old_password"]
-    new = request.form["new_password"]
-
-    conn = sqlite3.connect("database.db")
-    c = conn.cursor()
-
-    c.execute("SELECT password FROM users WHERE username=?", (session["user"],))
-    db_pass = c.fetchone()[0]
-
-    if old == db_pass:
-
-        c.execute("UPDATE users SET password=? WHERE username=?",
-                  (new,session["user"]))
-
-        conn.commit()
-
-        flash("Password Updated Successfully")
-
-    else:
-
-        flash("Current Password Incorrect")
-
-    conn.close()
-
-    return redirect("/settings")
-
-
 # ---------------- LOGOUT ----------------
 
 @app.route("/logout")
 def logout():
-
     session.clear()
-
     return redirect("/")
 
 

@@ -17,6 +17,8 @@ import matplotlib.pyplot as plt
 import qrcode
 from PIL import Image as PILImage
 
+from openpyxl import Workbook, load_workbook
+
 app = Flask(__name__)
 app.secret_key = "secret123"
 
@@ -59,6 +61,44 @@ def init_db():
     conn.close()
 
 init_db()
+
+def save_to_excel():
+
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+
+    c.execute("SELECT * FROM history")
+    data = c.fetchall()
+
+    conn.close()
+
+    file = "history.xlsx"
+
+    # File already irundha → clear & update
+    if os.path.exists(file):
+        wb = load_workbook(file)
+        sheet = wb.active
+
+        # old data clear
+        sheet.delete_rows(2, sheet.max_row)
+
+    else:
+        wb = Workbook()
+        sheet = wb.active
+
+        # Header create
+        sheet.append([
+            "ID","User","File","CNN","ORB",
+            "Final","Accuracy","Result","Date"
+        ])
+
+    # Insert data
+    for row in data:
+        sheet.append(row)
+
+    wb.save(file)
+
+    print("✅ Excel Updated Successfully")
 
 # ---------------- HOME ----------------
 
@@ -129,7 +169,14 @@ def dashboard():
 
     conn.close()
 
-    return render_template("dashboard.html", total=total, genuine=genuine, forged=forged)
+    return render_template("dashboard.html",
+                           total=total,
+                           genuine=genuine,
+                           forged=forged)
+
+
+
+
 
 # ---------------- VERIFY ----------------
 
@@ -167,6 +214,10 @@ def verify():
 
         conn.commit()
         last_id = c.lastrowid
+
+# 🔥 AUTO MAGIC HERE
+        save_to_excel()
+
         conn.close()
 
         return render_template("verify.html",
@@ -200,6 +251,24 @@ def verify_report(id):
                            cnn=data[3],
                            orb=data[4],
                            date=data[8])
+    
+    # ---------------- REPORTS ----------------
+@app.route("/reports")
+def reports():
+
+    if "user" not in session:
+        return redirect("/")
+
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+
+    c.execute("SELECT * FROM history ORDER BY id DESC")
+    history = c.fetchall()
+
+    conn.close()
+
+    return render_template("reports.html", history=history)
+    
 # ---------------- DOWNLOAD REPORT ----------------
 
 @app.route("/download_report/<int:id>")
@@ -212,7 +281,7 @@ def download_report(id):
     conn.close()
 
     if data is None:
-        return "Report not found"
+        return "Reports not found"
 
     cnn, orb, final, accuracy, result = data
 
@@ -330,6 +399,86 @@ def download_report(id):
 
     return send_file(file_path, as_attachment=True)
 
+# ---------------- SETTINGS ----------------
+
+@app.route("/settings")
+def settings():
+
+    if "user" not in session:
+        return redirect("/")
+
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+
+    c.execute("SELECT email FROM users WHERE username=?", (session["user"],))
+    email = c.fetchone()[0]
+
+    conn.close()
+
+    return render_template("settings.html", email=email)
+
+# ---------------- UPDATE PROFILE ----------------
+
+@app.route("/update_profile", methods=["POST"])
+def update_profile():
+
+    username = request.form["username"]
+    email = request.form["email"]
+
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+
+    c.execute("UPDATE users SET username=?, email=? WHERE username=?",
+              (username, email, session["user"]))
+
+    conn.commit()
+    conn.close()
+
+    session["user"] = username
+
+    flash("Profile Updated")
+
+    return redirect("/settings")
+
+# ---------------- UPLOAD PHOTO ----------------
+
+@app.route("/upload_photo", methods=["POST"])
+def upload_photo():
+
+    photo = request.files["photo"]
+
+    if photo:
+        path = os.path.join(UPLOAD_FOLDER, photo.filename)
+        photo.save(path)
+        session["photo"] = photo.filename
+
+    return redirect("/settings")
+
+# ---------------- CHANGE PASSWORD ----------------
+
+@app.route("/change_password", methods=["POST"])
+def change_password():
+
+    old = request.form["old_password"]
+    new = request.form["new_password"]
+
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+
+    c.execute("SELECT password FROM users WHERE username=?", (session["user"],))
+    db_pass = c.fetchone()[0]
+
+    if old == db_pass:
+        c.execute("UPDATE users SET password=? WHERE username=?",
+                  (new, session["user"]))
+        conn.commit()
+        flash("Password Updated")
+    else:
+        flash("Wrong Password")
+
+    conn.close()
+
+    return redirect("/settings")
 # ---------------- LOGOUT ----------------
 
 @app.route("/logout")

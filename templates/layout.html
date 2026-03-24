@@ -8,88 +8,62 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <script>
-
-/* Load dark mode before page render */
-
 if(localStorage.getItem("theme")=="dark"){
 document.documentElement.classList.add("dark-mode");
 }
-
 </script>
 
 <style>
 
+/* BODY */
 body{
-background:#f4f6f9;
+background:white; /* ✅ white background */
 font-family:Arial;
 transition:0.4s;
 }
 
-/* Sidebar */
+/* SIDEBAR */
 
 .sidebar{
 height:100vh;
 background:linear-gradient(180deg,#0f172a,#1e293b);
-padding-top:20px;
 position:fixed;
 width:220px;
+padding-top:20px;
+transition:0.3s;
 }
 
-/* Logo */
+.sidebar.hide{
+margin-left:-220px;
+}
+
+/* LOGO BUTTON */
 
 .logo{
 text-align:center;
-margin-bottom:25px;
+margin-bottom:20px;
+cursor:pointer;
 }
 
 .logo img{
-
-width:70px;
-height:70px;
-
+width:65px;
+height:65px;
 border-radius:50%;
-
-object-fit:cover;
-
 border:3px solid white;
-
-/* glow animation */
-
-animation:logoGlow 2s infinite alternate;
-
 }
 
-.logo h4{
+.logo h5{
 color:white;
-margin-top:10px;
+margin-top:8px;
 }
 
-/* Logo Glow */
-
-@keyframes logoGlow{
-
-0%{
-box-shadow:0 0 5px #3b82f6;
-}
-
-50%{
-box-shadow:0 0 20px #3b82f6;
-}
-
-100%{
-box-shadow:0 0 35px #3b82f6;
-}
-
-}
-
-/* Sidebar links */
+/* SIDEBAR LINKS */
 
 .sidebar a{
 display:block;
 color:#cbd5e1;
 padding:12px 20px;
 text-decoration:none;
-font-size:15px;
 transition:0.3s;
 border-radius:5px;
 margin:5px 10px;
@@ -98,27 +72,63 @@ margin:5px 10px;
 .sidebar a:hover{
 background:#334155;
 color:white;
-transform:translateX(8px);
-box-shadow:0 4px 15px rgba(0,0,0,0.4);
+transform:translateX(6px);
 }
 
-/* Content */
+/* HEADER (NEW COLOR) */
+
+.topbar{
+background:linear-gradient(90deg,#2563eb,#06b6d4); /* 🔥 new color */
+color:white;
+padding:12px 20px;
+margin-left:220px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+transition:0.3s;
+}
+
+.topbar.full{
+margin-left:0;
+}
+
+/* CONTENT */
 
 .content{
 margin-left:220px;
-padding:30px;
+padding:25px;
+transition:0.3s;
 }
 
-/* Topbar */
+.content.full{
+margin-left:0;
+}
 
-.topbar{
+/* TOGGLE BUTTON */
+
+.toggle-btn{
+font-size:22px;
+cursor:pointer;
+margin-right:15px;
+color:white;
+}
+
+/* PROFILE */
+
+.profile-circle{
+width:35px;
+height:35px;
+border-radius:50%;
 background:white;
-padding:12px 25px;
-border-bottom:1px solid #ddd;
-margin-left:220px;
+color:#2563eb;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:bold;
+margin-left:10px;
 }
 
-/* Dark Mode */
+/* DARK MODE */
 
 .dark-mode body{
 background:#121212;
@@ -126,9 +136,7 @@ color:white;
 }
 
 .dark-mode .topbar{
-background:#1e1e1e;
-color:white;
-border-bottom:none;
+background:#1e293b;
 }
 
 .dark-mode .content{
@@ -140,74 +148,39 @@ background:#1e1e1e;
 color:white;
 }
 
-.dark-mode .table{
-color:white;
-}
-
 .dark-mode .sidebar{
 background:#020617;
 }
 
-/* Toggle Switch */
-
-.toggle-container{
-margin-left:10px;
-}
+/* TOGGLE SWITCH */
 
 .toggle{
-position:relative;
-width:60px;
-height:30px;
+width:50px;
+height:25px;
 background:#ddd;
-border-radius:30px;
+border-radius:20px;
 cursor:pointer;
-transition:0.4s;
+position:relative;
+margin-left:10px;
 }
 
 .toggle-circle{
-position:absolute;
-width:26px;
-height:26px;
+width:20px;
+height:20px;
 background:white;
 border-radius:50%;
+position:absolute;
 top:2px;
-left:2px;
-transition:0.4s;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:14px;
+left:3px;
+transition:0.3s;
 }
 
 .dark-mode .toggle{
-background:#374151;
+background:#555;
 }
 
 .dark-mode .toggle-circle{
-transform:translateX(30px);
-}
-
-/* Profile circle */
-
-.profile-circle{
-
-width:35px;
-height:35px;
-
-border-radius:50%;
-
-background:#6366f1;
-color:white;
-
-display:flex;
-align-items:center;
-justify-content:center;
-
-font-weight:bold;
-font-size:14px;
-
-margin-left:10px;
-
+transform:translateX(22px);
 }
 
 </style>
@@ -216,75 +189,73 @@ margin-left:10px;
 
 <body>
 
-<!-- Sidebar -->
+<!-- SIDEBAR -->
 
-<div class="sidebar">
+<div id="sidebar" class="sidebar">
 
-<div class="logo">
-
+<div class="logo" onclick="window.location='/dashboard'">
 <img src="{{url_for('static',filename='logo.png')}}">
-
-<h4>AI Signature</h4>
-
+<h5>AI Signature</h5>
 </div>
 
 <a href="/dashboard">📊 Dashboard</a>
-
-<a href="/verify">✍ Verify Signature</a>
-
+<a href="/verify">✍ Verify</a>
 <a href="/reports">📄 Reports</a>
-
 <a href="/settings">⚙ Settings</a>
-
 <a href="/logout" class="text-danger">🚪 Logout</a>
 
 </div>
 
-<!-- Topbar -->
+<!-- HEADER -->
 
-<div class="topbar d-flex justify-content-between align-items-center">
-
-<span>Signature Verification System</span>
+<div id="topbar" class="topbar">
 
 <div class="d-flex align-items-center">
 
-<span class="me-3">
-Welcome {{session["user"]}}
-</span>
+<span class="toggle-btn" onclick="toggleSidebar()">☰</span>
 
-<!-- Profile Circle -->
+<span>Signature Verification System</span>
+
+</div>
+
+<div class="d-flex align-items-center">
+
+<span class="me-3">Welcome {{session["user"]}}</span>
 
 <div class="profile-circle">
 {{session["user"][0]|upper}}
 </div>
 
-<!-- Dark Mode Toggle -->
-
-<div class="toggle-container">
+<!-- 🌙 DARK MODE BUTTON -->
 
 <div class="toggle" onclick="toggleDark()">
-
-<div class="toggle-circle" id="toggleIcon">☀</div>
-
+<div class="toggle-circle"></div>
 </div>
 
 </div>
 
 </div>
 
-</div>
+<!-- CONTENT -->
 
-<!-- Page Content -->
-
-<div class="content">
+<div id="content" class="content">
 
 {% block content %}
-
 {% endblock %}
 
 </div>
 
 <script>
+
+/* SIDEBAR */
+
+function toggleSidebar(){
+document.getElementById("sidebar").classList.toggle("hide");
+document.getElementById("content").classList.toggle("full");
+document.getElementById("topbar").classList.toggle("full");
+}
+
+/* DARK MODE */
 
 function toggleDark(){
 
@@ -292,21 +263,9 @@ document.documentElement.classList.toggle("dark-mode");
 
 if(document.documentElement.classList.contains("dark-mode")){
 localStorage.setItem("theme","dark");
-document.getElementById("toggleIcon").innerHTML="🌙";
 }
 else{
 localStorage.setItem("theme","light");
-document.getElementById("toggleIcon").innerHTML="☀";
-}
-
-}
-
-/* restore icon */
-
-window.onload=function(){
-
-if(localStorage.getItem("theme")=="dark"){
-document.getElementById("toggleIcon").innerHTML="🌙";
 }
 
 }
@@ -314,5 +273,4 @@ document.getElementById("toggleIcon").innerHTML="🌙";
 </script>
 
 </body>
-
 </html>
